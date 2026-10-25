@@ -197,13 +197,13 @@
 <body>
 
     <div class="container">
-        <!-- Lado Esquerdo: Mensagem Inspiracional -->
+      
         <div class="sidebar">
             <h1>Organize a sua rotina num clique.</h1>
             <p>Faça login para gerir as suas tarefas diárias, definir prazos e aumentar a sua produtividade.</p>
         </div>
 
-        <!-- Lado Direito: Formulário -->
+        
         <div class="form-container">
             <div class="form-header">
                 <h2>Bem-vindo de volta!</h2>
@@ -238,16 +238,20 @@
     </div>
 
     <script>
-        function handleLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            // Aqui ligará a lógica do seu Backend futuramente
-            console.log('Tentativa de login com:', { email, password });
-            alert('Lógica de login acionada! Próximo passo: conectar à API.');
-        }
-    </script>
+    function handleLogin(event) {
+        // 1. Impede que a página recarregue imediatamente
+        event.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        // 2. Simula uma validação simples de credenciais (apenas para teste)
+        console.log('Tentativa de login com:', { email, password });
+
+        // 3. Faz o redirecionamento automático para a página do painel
+        window.location.href = "dashboard.html"; 
+    }
+</script>
 
 </body>
 </html>
