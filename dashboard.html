@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Tarefas - Painel</title>
+    <title>Gerenciador de Tarefas - TaskFlow</title>
     <style>
         * {
             margin: 0;
@@ -28,6 +28,7 @@
             border-right: 1px solid #334155;
             position: fixed;
             height: 100vh;
+            z-index: 10;
         }
         .logo {
             font-size: 1.3rem;
@@ -157,6 +158,7 @@
         }
         .column.drag-over {
             background-color: #334155;
+            border-color: #2563eb;
         }
         .column-header {
             font-size: 1rem;
@@ -270,6 +272,7 @@
             border-radius: 6px;
             color: white;
             font-size: 0.9rem;
+            outline: none;
         }
         .modal-actions {
             display: flex;
@@ -334,5 +337,3 @@
         
         <!-- SECÇÃO: QUADRO KANBAN -->
         <section id="view-quadro" class="view-section active">
-            <header class="header">
-                <div>
