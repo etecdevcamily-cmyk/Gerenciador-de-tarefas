@@ -247,23 +247,27 @@
             .nav-links { flex-direction: row; overflow-x: auto; padding-bottom: 10px; }
             .user-profile { display: none; }
         }
+    
+        .task-actions{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+        .task-actions button{flex:1;border:none;border-radius:6px;padding:6px 8px;font-size:.75rem;font-weight:600;cursor:pointer;background:#1e293b;color:#cbd5e1}
+        .task-actions button:hover{background:#0f172a;color:#fff}
+        .task-actions .del:hover{background:#7f1d1d;color:#fca5a5}
+        .task-actions .done:hover{background:#064e3b;color:#a7f3d0}
+        .empty{color:#64748b;font-size:.85rem;text-align:center;padding:20px 0}
+        .task-card.concluida{opacity:.7}
+        .task-card.concluida .task-title{text-decoration:line-through}
     </style>
 </head>
 <body>
-
-    <!-- Barra Lateral -->
     <aside class="sidebar">
         <div>
-            <div class="logo">
-                <span>📝</span> TaskFlow
-            </div>
+            <div class="logo"><span>📝</span> TaskFlow</div>
             <ul class="nav-links">
-                <li class="nav-item active"><a href="#">O Meu Quadro</a></li>
-                <li class="nav-item"><a href="#">Calendário</a></li>
+                <li class="nav-item active"><a href="dashboard.html">O Meu Quadro</a></li>
+                <li class="nav-item"><a href="nova-tarefa.html">Nova Tarefa</a></li>
                 <li class="nav-item"><a href="#">Configurações</a></li>
             </ul>
         </div>
-        
         <div class="user-profile">
             <div class="avatar">U</div>
             <div class="user-info">
@@ -272,78 +276,74 @@
             </div>
         </div>
     </aside>
-
-    <!-- Conteúdo Principal -->
     <main class="main-content">
         <header class="header">
-            <div>
-                <h1>Minhas Tarefas</h1>
-            </div>
-            <button class="btn-add" onclick="createNewTask()">+ Nova Tarefa</button>
+            <h1>Minhas Tarefas</h1>
+            <button class="btn-add" onclick="location.href='nova-tarefa.html'">+ Nova Tarefa</button>
         </header>
-
-        <!-- Painel de Estatísticas -->
         <section class="stats-container">
-            <div class="stat-card">
-                <p>Total de Tarefas</p>
-                <h3>3</h3>
-            </div>
-            <div class="stat-card">
-                <p>Em Progresso</p>
-                <h3 style="color: #f59e0b;">1</h3>
-            </div>
-            <div class="stat-card">
-                <p>Concluídas</p>
-                <h3 style="color: #10b981;">1</h3>
-            </div>
+            <div class="stat-card"><p>Total de Tarefas</p><h3 id="stTotal">0</h3></div>
+            <div class="stat-card"><p>Em Progresso</p><h3 id="stProg" style="color:#f59e0b;">0</h3></div>
+            <div class="stat-card"><p>Concluídas</p><h3 id="stDone" style="color:#10b981;">0</h3></div>
         </section>
-
-        <!-- Quadro Kanban de Organização -->
         <section class="board">
-            
-            <!-- Coluna: A Fazer -->
-            <div class="column">
-                <div class="column-header">
-                    <span>A Fazer</span>
-                    <span>1</span>
-                </div>
-                <div class="task-list">
-                    <div class="task-card">
-                        <div class="task-title">Desenhar Banco de Dados</div>
-                        <div class="task-desc">Modelar as tabelas de utilizadores e tarefas para o sistema.</div>
-                        <div class="task-meta">
-                            <span class="badge badge-alta">Alta</span>
-                            <span class="task-date">Amanhã</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="column"><div class="column-header"><span>A Fazer</span><span id="c-afazer">0</span></div><div class="task-list" id="l-afazer"></div></div>
+            <div class="column"><div class="column-header"><span>Em Progresso</span><span id="c-progresso">0</span></div><div class="task-list" id="l-progresso"></div></div>
+            <div class="column"><div class="column-header"><span>Concluído</span><span id="c-concluido">0</span></div><div class="task-list" id="l-concluido"></div></div>
+        </section>
+    </main>
+<script>
+const KEY = "taskflow_tarefas";
+function carregar() {
+    const salvo = localStorage.getItem(KEY);
+    if (salvo) return JSON.parse(salvo);
+    // Tarefas de exemplo na primeira vez
+    const ex = [
+        {id:1,titulo:"Desenhar Banco de Dados",descricao:"Modelar as tabelas de utilizadores e tarefas para o sistema.",prioridade:"alta",data:"",status:"afazer"},
+        {id:2,titulo:"Criar Interface Frontend",descricao:"Construir o HTML e CSS das páginas organizadoras e de login.",prioridade:"media",data:"",status:"progresso"},
+        {id:3,titulo:"Brainstorming de Ideias",descricao:"Definir o escopo inicial e o tema do projeto para o portfólio.",prioridade:"baixa",data:"",status:"concluido"}
+    ];
+    localStorage.setItem(KEY, JSON.stringify(ex));
+    return ex;
+}
+function salvar(t){ localStorage.setItem(KEY, JSON.stringify(t)); }
+function esc(s){ const d=document.createElement("div"); d.textContent=s||""; return d.innerHTML; }
+const nomePrio = {alta:"Alta",media:"Média",baixa:"Baixa"};
+function fmtData(d){ if(!d) return "Sem prazo"; const [a,m,dia]=d.split("-"); return dia+"/"+m+"/"+a; }
 
-            <!-- Coluna: Em Progresso -->
-            <div class="column">
-                <div class="column-header">
-                    <span>Em Progresso</span>
-                    <span>1</span>
+function render() {
+    const tarefas = carregar();
+    ["afazer","progresso","concluido"].forEach(s => {
+        const lista = document.getElementById("l-"+s);
+        const doStatus = tarefas.filter(t => t.status === s);
+        document.getElementById("c-"+s).textContent = doStatus.length;
+        lista.innerHTML = doStatus.length ? "" : '<div class="empty">Nenhuma tarefa</div>';
+        doStatus.forEach(t => {
+            const card = document.createElement("div");
+            card.className = "task-card" + (s==="concluido" ? " concluida" : "");
+            card.innerHTML = `
+                <div class="task-title">${esc(t.titulo)}</div>
+                <div class="task-desc">${esc(t.descricao)}</div>
+                <div class="task-meta">
+                    <span class="badge badge-${t.prioridade}">${nomePrio[t.prioridade]}</span>
+                    <span class="task-date">${fmtData(t.data)}</span>
                 </div>
-                <div class="task-list">
-                    <div class="task-card">
-                        <div class="task-title">Criar Interface Frontend</div>
-                        <div class="task-desc">Construir o HTML e CSS das páginas organizadoras e de login.</div>
-                        <div class="task-meta">
-                            <span class="badge badge-media">Média</span>
-                            <span class="task-date">28 Out</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Coluna: Concluído -->
-            <div class="column">
-                <div class="column-header">
-                    <span>Concluído</span>
-                    <span>1</span>
-                </div>
-                <div class="task-list">
-                    <div class="task-card" style="opacity: 0.7;">
-                        <div class="task-title" style="text-decoration: line-through;">Brainstorming de Ideias</div>
-                        <div class="task-desc">Definir o escopo inicial e o tema do projeto para o portfólio.</div>
+                <div class="task-actions">
+                    ${s==="afazer" ? `<button onclick="mudar(${t.id},'progresso')">▶ Iniciar</button>` : ""}
+                    ${s!=="concluido" ? `<button class="done" onclick="mudar(${t.id},'concluido')">✔ Feita</button>` : `<button onclick="mudar(${t.id},'afazer')">↺ Reabrir</button>`}
+                    <button onclick="location.href='nova-tarefa.html?id=${t.id}'">✎ Editar</button>
+                    <button class="del" onclick="excluir(${t.id})">🗑 Excluir</button>
+                </div>`;
+            lista.appendChild(card);
+        });
+    });
+    document.getElementById("stTotal").textContent = tarefas.length;
+    document.getElementById("stProg").textContent = tarefas.filter(t=>t.status==="progresso").length;
+    document.getElementById("stDone").textContent = tarefas.filter(t=>t.status==="concluido").length;
+}
+function mudar(id, status){ const t=carregar(); t.find(x=>x.id===id).status=status; salvar(t); render(); }
+function excluir(id){ if(!confirm("Excluir esta tarefa?")) return; salvar(carregar().filter(x=>x.id!==id)); render(); }
+render();
+</script>
+</body>
+</html>

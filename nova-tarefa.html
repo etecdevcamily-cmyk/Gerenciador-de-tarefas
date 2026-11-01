@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Tarefas - Nova Tarefa</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color:#0f172a; color:#f8fafc; display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px; }
+        .card { width:100%; max-width:560px; background:#1e293b; border:1px solid #334155; border-radius:16px; padding:36px; box-shadow:0 10px 25px rgba(0,0,0,.3); }
+        .logo { font-size:1.1rem; font-weight:700; color:#3b82f6; margin-bottom:20px; }
+        h1 { font-size:1.6rem; margin-bottom:6px; }
+        .sub { color:#94a3b8; font-size:.9rem; margin-bottom:28px; }
+        .grupo { margin-bottom:18px; }
+        label { display:block; font-size:.85rem; font-weight:600; color:#cbd5e1; margin-bottom:8px; }
+        input, textarea, select { width:100%; padding:12px 14px; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#f8fafc; font-size:.95rem; outline:none; transition:border .2s; }
+        input:focus, textarea:focus, select:focus { border-color:#3b82f6; }
+        textarea { resize:vertical; min-height:100px; }
+        input[type=date] { color-scheme:dark; }
+        .linha { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        .prioridades { display:flex; gap:8px; }
+        .prioridades input { display:none; }
+        .prioridades label { flex:1; text-align:center; padding:10px; border-radius:8px; cursor:pointer; border:1px solid #334155; margin:0; color:#94a3b8; }
+        #p-alta:checked + label { background:#7f1d1d; color:#fca5a5; border-color:#7f1d1d; }
+        #p-media:checked + label { background:#7c2d12; color:#fed7aa; border-color:#7c2d12; }
+        #p-baixa:checked + label { background:#064e3b; color:#a7f3d0; border-color:#064e3b; }
+        .acoes { display:flex; gap:12px; margin-top:28px; }
+        button { flex:1; padding:13px; border:none; border-radius:8px; font-weight:600; font-size:.95rem; cursor:pointer; transition:background .2s; }
+        .btn-salvar { background:#2563eb; color:#fff; }
+        .btn-salvar:hover { background:#1d4ed8; }
+        .btn-cancelar { background:#334155; color:#cbd5e1; }
+        .btn-cancelar:hover { background:#475569; }
+        .btn-excluir { background:transparent; color:#ef4444; border:1px solid #7f1d1d; flex:0 0 auto; padding:13px 18px; }
+        .btn-excluir:hover { background:#7f1d1d; color:#fca5a5; }
+        .erro { color:#f87171; font-size:.8rem; margin-top:6px; display:none; }
+        @media (max-width:520px){ .linha{grid-template-columns:1fr;} .card{padding:24px;} }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="logo">📝 TaskFlow</div>
+        <h1 id="titulo">Nova Tarefa</h1>
+        <p class="sub" id="subtitulo">Preencha os dados para adicionar ao seu quadro.</p>
+
+        <form id="form" onsubmit="salvarTarefa(event)">
+            <div class="grupo">
+                <label for="tituloTarefa">Título *</label>
+                <input type="text" id="tituloTarefa" placeholder="Ex: Estudar para a prova" maxlength="80">
+                <div class="erro" id="erroTitulo">Dê um título para a tarefa.</div>
+            </div>
+            <div class="grupo">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" placeholder="Detalhes da tarefa..." maxlength="300"></textarea>
+            </div>
+            <div class="grupo">
+                <label>Prioridade</label>
+                <div class="prioridades">
+                    <input type="radio" name="prio" id="p-alta" value="alta"><label for="p-alta">Alta</label>
+                    <input type="radio" name="prio" id="p-media" value="media" checked><label for="p-media">Média</label>
+                    <input type="radio" name="prio" id="p-baixa" value="baixa"><label for="p-baixa">Baixa</label>
+                </div>
+            </div>
+            <div class="linha">
+                <div class="grupo">
+                    <label for="data">Prazo</label>
+                    <input type="date" id="data">
+                </div>
+                <div class="grupo">
+                    <label for="status">Situação</label>
+                    <select id="status">
+                        <option value="afazer">A Fazer</option>
+                        <option value="progresso">Em Progresso</option>
+                        <option value="concluido">Concluído (feita)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="acoes">
+                <button type="button" class="btn-excluir" id="btnExcluir" style="display:none" onclick="excluirTarefa()">🗑 Excluir</button>
+                <button type="button" class="btn-cancelar" onclick="location.href='dashboard.html'">Cancelar</button>
+                <button type="submit" class="btn-salvar" id="btnSalvar">Criar Tarefa</button>
+            </div>
+        </form>
+    </div>
+
+<script>
+const KEY = "taskflow_tarefas";
+const carregar = () => JSON.parse(localStorage.getItem(KEY) || "[]");
+const salvar = t => localStorage.setItem(KEY, JSON.stringify(t));
+
+// Se a URL tiver ?id=..., estamos editando
+const idEdicao = Number(new URLSearchParams(location.search).get("id")) || null;
+
+if (idEdicao) {
+    const t = carregar().find(x => x.id === idEdicao);
+    if (!t) { alert("Tarefa não encontrada."); location.href = "dashboard.html"; }
+    else {
+        document.getElementById("titulo").textContent = "Editar Tarefa";
+        document.getElementById("subtitulo").textContent = "Altere o que precisar e salve.";
+        document.getElementById("btnSalvar").textContent = "Salvar Alterações";
+        document.getElementById("btnExcluir").style.display = "block";
+        document.getElementById("tituloTarefa").value = t.titulo;
+        document.getElementById("descricao").value = t.descricao;
+        document.getElementById("p-" + t.prioridade).checked = true;
+        document.getElementById("data").value = t.data || "";
+        document.getElementById("status").value = t.status;
+    }
+}
+
+function salvarTarefa(e) {
+    e.preventDefault();
+    const titulo = document.getElementById("tituloTarefa").value.trim();
+    document.getElementById("erroTitulo").style.display = titulo ? "none" : "block";
+    if (!titulo) return;
+
+    const dados = {
+        titulo,
+        descricao: document.getElementById("descricao").value.trim(),
+        prioridade: document.querySelector("input[name=prio]:checked").value,
+        data: document.getElementById("data").value,
+        status: document.getElementById("status").value
+    };
+    const tarefas = carregar();
+    if (idEdicao) {
+        Object.assign(tarefas.find(x => x.id === idEdicao), dados);
+    } else {
+        tarefas.push({ id: Date.now(), ...dados });
+    }
+    salvar(tarefas);
+    location.href = "dashboard.html";
+}
+
+function excluirTarefa() {
+    if (!confirm("Tem certeza que deseja excluir esta tarefa?")) return;
+    salvar(carregar().filter(x => x.id !== idEdicao));
+    location.href = "dashboard.html";
+}
+</script>
+</body>
+</html>
