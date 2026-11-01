@@ -295,6 +295,15 @@
 <script>
 const KEY = "taskflow_tarefas";
 function carregar() {
+    // Sincroniza o usuário salvo nas Configurações
+const user = JSON.parse(localStorage.getItem("taskflow_user") || "{}");
+if (user.nome) {
+    document.querySelector(".user-info .name").textContent = user.nome;
+    const avatar = document.querySelector(".sidebar .avatar");
+    avatar.textContent = user.nome.slice(0, 2).toUpperCase();
+    if (user.corAvatar) avatar.style.backgroundColor = user.corAvatar;
+}
+
     const salvo = localStorage.getItem(KEY);
     if (salvo) return JSON.parse(salvo);
     // Tarefas de exemplo na primeira vez
