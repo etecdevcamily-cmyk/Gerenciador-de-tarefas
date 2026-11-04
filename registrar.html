@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Gerenciador de Tarefas - Registrar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html {
+            background: #020617;
+        }
+
+        body {
+            background: #1e293b;
+            color: #f8fafc;
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100dvh;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 0 60px rgba(0,0,0,.6);
+        }
+
+        .top {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            padding: calc(24px + env(safe-area-inset-top)) 24px 36px;
+            border-radius: 0 0 32px 32px;
+        }
+
+        .back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.15);
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+
+        .top h1 {
+            font-size: 1.7rem;
+            margin-bottom: 8px;
+        }
+
+        .top p {
+            color: #bfdbfe;
+        }
+
+        .content {
+            padding: 28px 24px calc(24px + env(safe-area-inset-bottom));
+        }
+
+        .social {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-social:active, .btn:active {
+            transform: scale(.96);
+        }
+
+        .gmail {
+            background: #fff;
+            color: #1f2937;
+        }
+
+        .facebook {
+            background: #1877f2;
+            color: #fff;
+        }
+
+        .btn-social svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #94a3b8;
+            font-size: .85rem;
+            margin: 24px 0;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #334155;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-size: .9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 16px;
+            background: #334155;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: #1e293b;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #94a3b8;
+            font-size: .9rem;
+        }
+
+        .footer a {
+            color: #3b82f6;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .erro {
+            color: #f87171;
+            font-size: .85rem;
+            margin-top: 6px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="top">
+        <a href="index.html" class="back" aria-label="Voltar">&#8592;</a>
+        <h1>Crie a sua conta</h1>
+        <p>Cadastre-se para começar a organizar as suas tarefas.</p>
+    </div>
+
+    <div class="content">
+        <div class="social">
+            <button class="btn-social gmail" onclick="registrarSocial('Gmail')">
+                <svg viewBox="0 0 48 48">
+                    <path fill="#4caf50" d="M45 16.2l-5 2.75-5 4.75V40h7a3 3 0 0 0 3-3z"/>
+                    <path fill="#1e88e5" d="M3 16.2l3.6 1.7L13 23.7V40H6a3 3 0 0 1-3-3z"/>
+                    <path fill="#e53935" d="M35 11.2L24 19.45 13 11.2 12 17l1 6.7 11 8.25 11-8.25 1-6.7z"/>
+                    <path fill="#c62828" d="M3 12.3v3.9l10 7.5V11.2L9.9 8.9A4.3 4.3 0 0 0 3 12.3z"/>
+                    <path fill="#fbc02d" d="M45 12.3v3.9l-10 7.5V11.2l3.1-2.3A4.3 4.3 0 0 1 45 12.3z"/>
+                </svg>
+                Registrar com Gmail
+            </button>
+            <button class="btn-social facebook" onclick="registrarSocial('Facebook')">
+                <svg viewBox="0 0 24 24" fill="#fff">
+                    <path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/>
+                </svg>
+                Registrar com Facebook
+            </button>
+        </div>
+
+        <div class="divider">ou com e-mail</div>
+
+        <form onsubmit="registrar(event)">
+            <div class="input-group">
+                <label for="nome">Nome</label>
+                <input id="nome" placeholder="Seu nome completo" required>
+            </div>
+            <div class="input-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" placeholder="exemplo@email.com" required>
+            </div>
+            <div class="input-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" placeholder="Mínimo 6 caracteres" minlength="6" required>
+            </div>
+            <div class="input-group">
+                <label for="senha2">Confirmar senha</label>
+                <input type="password" id="senha2" placeholder="••••••••" required>
+                <div class="erro" id="erro">As senhas não coincidem.</div>
+            </div>
+            <button type="submit" class="btn">Criar conta</button>
+        </form>
+
+        <div class="footer">Já tem conta? <a href="index.html">Entrar</a></div>
+    </div>
+
+    <script>
+        function entrar(nome) {
+            localStorage.setItem('userToken', 'registo_local');
+            if (nome) localStorage.setItem('userName', nome);
+            window.location.href = 'dashboard.html';
+        }
+
+        function registrar(e) {
+            e.preventDefault();
+            var s = document.getElementById('senha').value;
+            var s2 = document.getElementById('senha2').value;
+            if (s !== s2) {
+                document.getElementById('erro').style.display = 'block';
+                return;
+            }
+            entrar(document.getElementById('nome').value);
+        }
+
+        function registrarSocial(rede) {
+            entrar(rede + " Usuário");
+        }
+    </script>
+</body>
+</html>
