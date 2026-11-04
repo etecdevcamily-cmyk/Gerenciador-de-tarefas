@@ -2,43 +2,101 @@
 <html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Gerenciador de Tarefas - Nova Tarefa</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color:#0f172a; color:#f8fafc; display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px; }
-        .card { width:100%; max-width:560px; background:#1e293b; border:1px solid #334155; border-radius:16px; padding:36px; box-shadow:0 10px 25px rgba(0,0,0,.3); }
-        .logo { font-size:1.1rem; font-weight:700; color:#3b82f6; margin-bottom:20px; }
-        h1 { font-size:1.6rem; margin-bottom:6px; }
-        .sub { color:#94a3b8; font-size:.9rem; margin-bottom:28px; }
+        html { background:#020617; }
+        body {
+            background-color:#0f172a;
+            color:#f8fafc;
+            display:flex;
+            align-items:stretch;
+            min-height:100vh;
+            min-height:100dvh;
+            max-width:480px;
+            margin:0 auto;
+            box-shadow:0 0 60px rgba(0,0,0,.6);
+        }
+        .card {
+            width:100%;
+            background:#1e293b;
+            padding:calc(20px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));
+            display:flex;
+            flex-direction:column;
+        }
+        .logo {
+            font-size:1.1rem;
+            font-weight:700;
+            color:#3b82f6;
+            margin-bottom:16px;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            gap:8px;
+        }
+        .logo::before { content:"‹"; font-size:1.8rem; line-height:1; }
+        h1 { font-size:1.5rem; margin-bottom:4px; }
+        .sub { color:#94a3b8; font-size:.85rem; margin-bottom:24px; }
         .grupo { margin-bottom:18px; }
         label { display:block; font-size:.85rem; font-weight:600; color:#cbd5e1; margin-bottom:8px; }
-        input, textarea, select { width:100%; padding:12px 14px; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#f8fafc; font-size:.95rem; outline:none; transition:border .2s; }
+        input, textarea, select {
+            width:100%;
+            padding:13px 14px;
+            background:#0f172a;
+            border:1px solid #334155;
+            border-radius:12px;
+            color:#f8fafc;
+            font-size:16px;
+            outline:none;
+            transition:border .2s;
+        }
         input:focus, textarea:focus, select:focus { border-color:#3b82f6; }
-        textarea { resize:vertical; min-height:100px; }
+        textarea { resize:vertical; min-height:90px; }
         input[type=date] { color-scheme:dark; }
-        .linha { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        .linha { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
         .prioridades { display:flex; gap:8px; }
         .prioridades input { display:none; }
-        .prioridades label { flex:1; text-align:center; padding:10px; border-radius:8px; cursor:pointer; border:1px solid #334155; margin:0; color:#94a3b8; }
+        .prioridades label {
+            flex:1;
+            text-align:center;
+            padding:12px 8px;
+            border-radius:10px;
+            cursor:pointer;
+            border:1px solid #334155;
+            margin:0;
+            color:#94a3b8;
+            font-weight:600;
+            font-size:0.85rem;
+        }
         #p-alta:checked + label { background:#7f1d1d; color:#fca5a5; border-color:#7f1d1d; }
         #p-media:checked + label { background:#7c2d12; color:#fed7aa; border-color:#7c2d12; }
         #p-baixa:checked + label { background:#064e3b; color:#a7f3d0; border-color:#064e3b; }
-        .acoes { display:flex; gap:12px; margin-top:28px; }
-        button { flex:1; padding:13px; border:none; border-radius:8px; font-weight:600; font-size:.95rem; cursor:pointer; transition:background .2s; }
+        .acoes { display:flex; gap:10px; margin-top:24px; }
+        button {
+            flex:1;
+            padding:14px;
+            border:none;
+            border-radius:12px;
+            font-weight:600;
+            font-size:.95rem;
+            cursor:pointer;
+            transition:background .2s;
+        }
         .btn-salvar { background:#2563eb; color:#fff; }
         .btn-salvar:hover { background:#1d4ed8; }
         .btn-cancelar { background:#334155; color:#cbd5e1; }
-        .btn-cancelar:hover { background:#475569; }
-        .btn-excluir { background:transparent; color:#ef4444; border:1px solid #7f1d1d; flex:0 0 auto; padding:13px 18px; }
-        .btn-excluir:hover { background:#7f1d1d; color:#fca5a5; }
+        .btn-excluir { background:transparent; color:#ef4444; border:1px solid #7f1d1d; flex:0 0 auto; padding:14px 16px; }
         .erro { color:#f87171; font-size:.8rem; margin-top:6px; display:none; }
-        @media (max-width:520px){ .linha{grid-template-columns:1fr;} .card{padding:24px;} }
     </style>
 </head>
 <body>
     <div class="card">
-        <div class="logo">📝 TaskFlow</div>
+        <div class="logo" onclick="location.href='dashboard.html'">TaskFlow</div>
         <h1 id="titulo">Nova Tarefa</h1>
         <p class="sub" id="subtitulo">Preencha os dados para adicionar ao seu quadro.</p>
 
@@ -70,7 +128,7 @@
                     <select id="status">
                         <option value="afazer">A Fazer</option>
                         <option value="progresso">Em Progresso</option>
-                        <option value="concluido">Concluído (feita)</option>
+                        <option value="concluido">Concluído</option>
                     </select>
                 </div>
             </div>
@@ -87,7 +145,6 @@ const KEY = "taskflow_tarefas";
 const carregar = () => JSON.parse(localStorage.getItem(KEY) || "[]");
 const salvar = t => localStorage.setItem(KEY, JSON.stringify(t));
 
-// Se a URL tiver ?id=..., estamos editando
 const idEdicao = Number(new URLSearchParams(location.search).get("id")) || null;
 
 if (idEdicao) {

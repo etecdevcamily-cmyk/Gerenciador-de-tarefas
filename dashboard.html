@@ -2,7 +2,11 @@
 <html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Gerenciador de Tarefas - Painel</title>
     <style>
         * {
@@ -12,83 +16,114 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        html { background: #020617; }
         body {
             background-color: #0f172a;
             color: #f8fafc;
-            display: flex;
+            display: block;
             min-height: 100vh;
+            min-height: 100dvh;
+            max-width: 480px;
+            margin: 0 auto;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior: none;
+            box-shadow: 0 0 60px rgba(0,0,0,.6);
         }
 
-        /* Barra Lateral */
+        input, textarea, select {
+            font-size: 16px;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        button, .btn-primary, .btn-add, a {
+            touch-action: manipulation;
+        }
+
+        button:active, .btn-primary:active, .btn-add:active, .tab-btn:active {
+            transform: scale(.96);
+        }
+
+        ::-webkit-scrollbar { display: none; }
+
+        /* Barra de Navegação Inferior (Estilo App) */
         .sidebar {
-            width: 260px;
-            background-color: #1e293b;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            border-right: 1px solid #334155;
-            flex-shrink: 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            max-width: 480px;
+            width: 100%;
+            height: auto;
+            padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+            border-top: 1px solid #334155;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 900;
         }
 
-        .logo {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #3b82f6;
-            margin-bottom: 40px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-        }
+        .sidebar .logo { display: none; }
 
         .nav-links {
             list-style: none;
             display: flex;
-            flex-direction: column;
-            gap: 8px;
+            flex-direction: row;
+            justify-content: space-around;
+            gap: 4px;
         }
+
+        .nav-item { flex: 1; }
 
         .nav-item button {
             width: 100%;
-            text-align: left;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
             background: none;
             border: none;
             outline: none;
-            padding: 12px 16px;
+            padding: 8px 4px;
             color: #94a3b8;
-            border-radius: 8px;
+            border-radius: 12px;
             font-weight: 500;
-            font-size: 0.95rem;
+            font-size: 0.72rem;
+            gap: 2px;
             cursor: pointer;
             transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .nav-item button:hover {
-            background-color: #334155;
-            color: #fff;
         }
 
         .nav-item.active button {
-            background-color: #334155;
+            background: rgba(59, 130, 246, 0.15);
             color: #3b82f6;
             font-weight: 600;
         }
 
+        /* Top Bar com Usuário */
         .user-profile {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            max-width: 480px;
+            padding: calc(12px + env(safe-area-inset-top)) 16px 12px;
+            border-bottom: 1px solid #334155;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             display: flex;
             align-items: center;
             gap: 12px;
-            padding-top: 20px;
-            border-top: 1px solid #334155;
+            z-index: 900;
         }
 
         .avatar {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             background-color: #2563eb;
             border-radius: 50%;
             display: flex;
@@ -97,116 +132,129 @@
             font-weight: 600;
             flex-shrink: 0;
             color: #fff;
-            transition: background-color 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .user-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .user-info .name {
             font-size: 0.9rem;
             font-weight: 600;
-            max-width: 140px;
+            max-width: 200px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .user-info .logout {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #ef4444;
             text-decoration: none;
-            display: inline-block;
-            margin-top: 2px;
+            padding: 6px 12px;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 999px;
         }
 
         /* Conteúdo Principal */
         .main-content {
-            flex: 1;
-            padding: 40px;
-            overflow-y: auto;
+            padding: calc(84px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom));
+            overflow-x: hidden;
         }
 
-        /* Controle de Telas */
         .view-section {
             display: none;
             animation: fadeIn 0.2s ease-in-out;
         }
 
-        .view-section.active {
-            display: block;
-        }
+        .view-section.active { display: block; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(4px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Cabeçalho do Quadro */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 32px;
+            margin-bottom: 18px;
         }
 
-        .header h1 {
-            font-size: 1.8rem;
-        }
+        .header h1 { font-size: 1.5rem; }
 
+        /* Botão Flutuante de Adicionar Tarefa */
         .btn-add {
+            position: fixed;
+            right: max(16px, calc(50vw - 224px));
+            bottom: calc(84px + env(safe-area-inset-bottom));
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
             background-color: #2563eb;
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: 600;
+            font-size: 0;
             cursor: pointer;
-            transition: background 0.2s;
+            z-index: 800;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .btn-add:hover {
-            background-color: #1d4ed8;
+        .btn-add::before {
+            content: "+";
+            font-size: 1.8rem;
+            line-height: 1;
         }
 
-        /* Estatísticas */
+        /* Cards de Estatísticas */
         .stats-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 32px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
         }
 
         .stat-card {
             background-color: #1e293b;
-            padding: 20px;
-            border-radius: 12px;
+            padding: 12px;
+            border-radius: 14px;
             border: 1px solid #334155;
+            text-align: center;
         }
 
         .stat-card p {
             color: #94a3b8;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
+            font-size: 0.7rem;
+            margin-bottom: 4px;
         }
 
         .stat-card h3 {
-            font-size: 1.8rem;
+            font-size: 1.3rem;
             font-weight: 700;
         }
 
         /* Quadro de Tarefas */
         .board {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
         }
 
         .column {
             background-color: #1e293b;
-            border-radius: 12px;
+            border-radius: 16px;
             border: 1px solid #334155;
-            padding: 20px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
         }
 
         .column-header {
@@ -216,51 +264,47 @@
             align-items: center;
             color: #cbd5e1;
             border-bottom: 1px solid #334155;
-            padding-bottom: 12px;
+            padding-bottom: 10px;
+            font-size: 0.9rem;
         }
 
         .task-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            min-height: 80px;
+            gap: 10px;
+            min-height: 60px;
         }
 
         .task-card {
             background-color: #0f172a;
             border: 1px solid #334155;
-            padding: 16px;
-            border-radius: 8px;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-
-        .task-card:hover {
-            border-color: #3b82f6;
-            transform: translateY(-2px);
+            padding: 14px;
+            border-radius: 12px;
         }
 
         .task-title {
             font-weight: 600;
-            margin-bottom: 6px;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
         }
 
         .task-desc {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #94a3b8;
             line-height: 1.4;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .task-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
 
         .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
             font-weight: 600;
         }
 
@@ -273,58 +317,47 @@
         .task-actions {
             display: flex;
             gap: 6px;
-            margin-top: 12px;
+            margin-top: 10px;
             flex-wrap: wrap;
         }
 
         .task-actions button {
             flex: 1;
             border: none;
-            border-radius: 6px;
-            padding: 6px 8px;
+            border-radius: 8px;
+            padding: 8px 6px;
             font-size: .75rem;
             font-weight: 600;
             cursor: pointer;
             background: #1e293b;
             color: #cbd5e1;
-            transition: background 0.15s;
         }
 
-        .task-actions button:hover { background: #0f172a; color: #fff; }
         .task-actions .del:hover { background: #7f1d1d; color: #fca5a5; }
         .task-actions .done:hover { background: #064e3b; color: #a7f3d0; }
 
         .empty {
             color: #64748b;
-            font-size: .85rem;
+            font-size: .8rem;
             text-align: center;
-            padding: 20px 0;
+            padding: 16px 0;
         }
 
         .task-card.concluida { opacity: .7; }
         .task-card.concluida .task-title { text-decoration: line-through; }
 
-        /* ================= ESTILOS DAS CONFIGURAÇÕES ================= */
-        .settings-header {
-            margin-bottom: 28px;
-        }
-
-        .settings-header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 6px;
-        }
-
-        .settings-header p {
-            color: #94a3b8;
-            font-size: 0.95rem;
-        }
+        /* Estilos de Configurações Dentro do Painel */
+        .settings-header { margin-bottom: 18px; }
+        .settings-header h1 { font-size: 1.5rem; margin-bottom: 4px; }
+        .settings-header p { color: #94a3b8; font-size: 0.85rem; }
 
         .settings-tabs {
             display: flex;
-            gap: 8px;
-            border-bottom: 1px solid #334155;
-            margin-bottom: 28px;
             overflow-x: auto;
+            gap: 6px;
+            border-bottom: 1px solid #334155;
+            margin-bottom: 20px;
+            scrollbar-width: none;
         }
 
         .tab-btn {
@@ -332,17 +365,18 @@
             border: none;
             outline: none;
             color: #94a3b8;
-            padding: 12px 18px;
-            font-size: 0.95rem;
+            padding: 10px 14px;
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
+            border-radius: 999px;
             white-space: nowrap;
         }
 
-        .tab-btn:hover { color: #f8fafc; }
-        .tab-btn.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+        .tab-btn.active {
+            background: #334155;
+            color: #3b82f6;
+        }
 
         .tab-panel { display: none; }
         .tab-panel.active { display: block; animation: fadeIn 0.2s; }
@@ -350,260 +384,174 @@
         .card {
             background-color: #1e293b;
             border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 28px;
-            margin-bottom: 24px;
-            max-width: 900px;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
         }
 
-        .card-title {
-            font-size: 1.15rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .card-desc {
-            color: #94a3b8;
-            font-size: 0.85rem;
-            margin-bottom: 22px;
-        }
+        .card-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; }
+        .card-desc { color: #94a3b8; font-size: 0.8rem; margin-bottom: 16px; }
 
         .avatar-edit-section {
             display: flex;
             align-items: center;
-            gap: 20px;
-            margin-bottom: 24px;
-            padding-bottom: 20px;
+            gap: 16px;
+            margin-bottom: 18px;
+            padding-bottom: 16px;
             border-bottom: 1px solid #334155;
         }
 
         .avatar-preview {
-            width: 72px;
-            height: 72px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background-color: #2563eb;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: #fff;
-            border: 2px solid #3b82f6;
         }
 
-        .avatar-colors {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
+        .avatar-colors { display: flex; gap: 8px; margin-top: 6px; }
         .color-dot {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             cursor: pointer;
             border: 2px solid transparent;
-            transition: transform 0.15s;
         }
-
-        .color-dot:hover { transform: scale(1.15); }
         .color-dot.selected { border-color: #fff; }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; margin-bottom: 6px; color: #cbd5e1; font-size: 0.8rem; font-weight: 600; }
 
-        .form-group { margin-bottom: 20px; }
-        .form-group.full-width { grid-column: 1 / -1; }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #cbd5e1;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        select,
-        textarea {
+        input[type="text"], input[type="email"], input[type="password"], select, textarea {
             width: 100%;
             padding: 12px 14px;
             background-color: #0f172a;
             border: 1px solid #334155;
-            border-radius: 8px;
+            border-radius: 10px;
             color: #f8fafc;
-            font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.2s;
         }
-
-        input:focus, select:focus, textarea:focus { border-color: #3b82f6; }
-        textarea { resize: vertical; min-height: 85px; }
 
         .toggle-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 0;
+            padding: 14px 0;
             border-bottom: 1px solid #334155;
+            gap: 12px;
         }
-
         .toggle-item:last-child { border-bottom: none; }
-        .toggle-label { font-weight: 600; font-size: 0.95rem; margin-bottom: 2px; }
-        .toggle-desc { font-size: 0.8rem; color: #94a3b8; }
+        .toggle-label { font-weight: 600; font-size: 0.9rem; }
+        .toggle-desc { font-size: 0.75rem; color: #94a3b8; }
 
         .switch {
             position: relative;
             display: inline-block;
-            width: 46px;
+            width: 44px;
             height: 24px;
             flex-shrink: 0;
         }
-
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #334155;
-            transition: .3s;
-            border-radius: 34px;
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #334155; border-radius: 34px; transition: .3s;
         }
-
         .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; border-radius: 50%; transition: .3s;
         }
-
         input:checked + .slider { background-color: #2563eb; }
-        input:checked + .slider:before { transform: translateX(22px); }
+        input:checked + .slider:before { transform: translateX(20px); }
 
         .btn-primary {
+            width: 100%;
             background-color: #2563eb;
             color: #fff;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
+            padding: 14px;
+            border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
         }
 
-        .btn-primary:hover { background-color: #1d4ed8; }
-
-        .btn-secondary {
-            background-color: #334155;
-            color: #cbd5e1;
+        .btn-secondary, .btn-danger {
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
             border: none;
-            padding: 11px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
         }
-
-        .btn-secondary:hover { background-color: #475569; }
-
-        .btn-danger {
-            background-color: #ef4444;
-            color: #fff;
-            border: none;
-            padding: 11px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .btn-danger:hover { background-color: #dc2626; }
-
-        .danger-card {
-            border: 1px solid #7f1d1d;
-            background-color: #1c151c;
-        }
-
-        .danger-card .card-title { color: #f87171; }
+        .btn-secondary { background: #334155; color: #cbd5e1; }
+        .btn-danger { background: #ef4444; color: #fff; }
 
         .toast {
             position: fixed;
-            bottom: 24px;
-            right: 24px;
+            bottom: calc(84px + env(safe-area-inset-bottom));
+            left: 20px;
+            right: 20px;
+            margin: 0 auto;
+            max-width: 440px;
             background-color: #10b981;
             color: #fff;
-            padding: 14px 22px;
-            border-radius: 8px;
+            padding: 12px 18px;
+            border-radius: 12px;
             font-weight: 600;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            text-align: center;
             transform: translateY(100px);
             opacity: 0;
             transition: all 0.3s;
             z-index: 999;
         }
-
         .toast.error { background-color: #ef4444; }
         .toast.show { transform: translateY(0); opacity: 1; }
-
-        @media (max-width: 768px) {
-            body { flex-direction: column; }
-            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #334155; }
-            .form-grid { grid-template-columns: 1fr; }
-            .main-content { padding: 24px; }
-        }
     </style>
 </head>
 <body>
 
-    <!-- BARRA LATERAL -->
+    <!-- BARRA INFERIOR DE ABAS (APP SHELL) -->
     <aside class="sidebar">
-        <div>
-            <div class="logo" onclick="abrirTela('quadro')">
-                <span>📝</span> Tarefas
-            </div>
-            <ul class="nav-links">
-                <li class="nav-item active" id="nav-quadro">
-                    <button type="button" onclick="abrirTela('quadro')">📋 O Meu Quadro</button>
-                </li>
-                <li class="nav-item" id="nav-nova">
-                    <button type="button" onclick="location.href='nova-tarefa.html'">➕ Nova Tarefa</button>
-                </li>
-                <li class="nav-item" id="nav-config">
-                    <button type="button" onclick="abrirTela('configuracoes')">⚙️ Configurações</button>
-                </li>
-            </ul>
-        </div>
-
-        <div class="user-profile">
-            <div class="avatar" id="sidebarAvatar">U</div>
-            <div class="user-info">
-                <div class="name" id="sidebarName">Utilizador</div>
-                <a href="index.html" class="logout" onclick="fazerLogout(event)">Sair do sistema</a>
-            </div>
-        </div>
+        <ul class="nav-links">
+            <li class="nav-item active" id="nav-quadro">
+                <button type="button" onclick="abrirTela('quadro')">📋 O Meu Quadro</button>
+            </li>
+            <li class="nav-item" id="nav-nova">
+                <button type="button" onclick="location.href='nova-tarefa.html'">➕ Nova Tarefa</button>
+            </li>
+            <li class="nav-item" id="nav-config">
+                <button type="button" onclick="abrirTela('configuracoes')">⚙️ Configurações</button>
+            </li>
+        </ul>
     </aside>
+
+    <!-- HEADER SUPERIOR -->
+    <div class="user-profile">
+        <div class="avatar" id="sidebarAvatar">U</div>
+        <div class="user-info">
+            <div class="name" id="sidebarName">Utilizador</div>
+            <a href="index.html" class="logout" onclick="fazerLogout(event)">Sair</a>
+        </div>
+    </div>
 
     <!-- CONTEÚDO PRINCIPAL -->
     <main class="main-content">
 
-        <!-- ================= TELA 1: O MEU QUADRO ================= -->
+        <!-- TELA 1: QUADRO -->
         <section id="view-quadro" class="view-section active">
             <header class="header">
                 <h1>Minhas Tarefas</h1>
-                <button class="btn-add" onclick="location.href='nova-tarefa.html'">+ Nova Tarefa</button>
             </header>
 
+            <!-- Botão Flutuante (FAB) -->
+            <button class="btn-add" onclick="location.href='nova-tarefa.html'">+</button>
+
             <section class="stats-container">
-                <div class="stat-card"><p>Total de Tarefas</p><h3 id="stTotal">0</h3></div>
-                <div class="stat-card"><p>Em Progresso</p><h3 id="stProg" style="color:#f59e0b;">0</h3></div>
+                <div class="stat-card"><p>Total</p><h3 id="stTotal">0</h3></div>
+                <div class="stat-card"><p>Progresso</p><h3 id="stProg" style="color:#f59e0b;">0</h3></div>
                 <div class="stat-card"><p>Concluídas</p><h3 id="stDone" style="color:#10b981;">0</h3></div>
             </section>
 
@@ -623,25 +571,24 @@
             </section>
         </section>
 
-        <!-- ================= TELA 2: CONFIGURAÇÕES ================= -->
+        <!-- TELA 2: CONFIGURAÇÕES -->
         <section id="view-configuracoes" class="view-section">
             <header class="settings-header">
-                <h1>Configurações da Conta</h1>
-                <p>Personalize o seu perfil, segurança e gerencie os dados das suas tarefas.</p>
+                <h1>Configurações</h1>
+                <p>Personalize seu perfil, senha e dados.</p>
             </header>
 
             <div class="settings-tabs">
                 <button class="tab-btn active" onclick="trocarSubAba(event, 'sub-perfil')">Perfil</button>
                 <button class="tab-btn" onclick="trocarSubAba(event, 'sub-seguranca')">Segurança</button>
-                <button class="tab-btn" onclick="trocarSubAba(event, 'sub-preferencias')">Preferências</button>
-                <button class="tab-btn" onclick="trocarSubAba(event, 'sub-dados')">Dados & Conta</button>
+                <button class="tab-btn" onclick="trocarSubAba(event, 'sub-dados')">Dados</button>
             </div>
 
-            <!-- SUB-ABA PERFIL -->
+            <!-- PERFIL -->
             <div id="sub-perfil" class="tab-panel active">
                 <div class="card">
                     <h2 class="card-title">Informações Pessoais</h2>
-                    <p class="card-desc">Atualize o nome e avatar que aparecem na barra lateral.</p>
+                    <p class="card-desc">Atualize os dados exibidos no topo do app.</p>
 
                     <div class="avatar-edit-section">
                         <div class="avatar-preview" id="previewAvatar">U</div>
@@ -658,126 +605,62 @@
                     </div>
 
                     <form onsubmit="salvarPerfil(event)">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="nome">Nome Completo</label>
-                                <input type="text" id="nome" required placeholder="Ex: Camily Cavalcante">
-                            </div>
-                            <div class="form-group">
-                                <label for="email">E-mail</label>
-                                <input type="email" id="email" required placeholder="exemplo@email.com">
-                            </div>
-                            <div class="form-group">
-                                <label for="cargo">Cargo / Função</label>
-                                <input type="text" id="cargo" placeholder="Ex: Gestora de Projetos">
-                            </div>
-                            <div class="form-group">
-                                <label for="fuso">Fuso Horário</label>
-                                <select id="fuso">
-                                    <option value="America/Sao_Paulo">Brasília (GMT-3)</option>
-                                    <option value="Europe/Lisbon">Lisboa (GMT+0)</option>
-                                    <option value="UTC">UTC Padrão</option>
-                                </select>
-                            </div>
-                            <div class="form-group full-width">
-                                <label for="biografia">Biografia curta</label>
-                                <textarea id="biografia" placeholder="Descreva brevemente a sua função..."></textarea>
-                            </div>
+                        <div class="form-group">
+                            <label for="nome">Nome Completo</label>
+                            <input type="text" id="nome" required placeholder="Ex: Camily Cavalcante">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">E-mail</label>
+                            <input type="email" id="email" required placeholder="exemplo@email.com">
                         </div>
                         <button type="submit" class="btn-primary">Salvar Perfil</button>
                     </form>
                 </div>
             </div>
 
-            <!-- SUB-ABA SEGURANÇA -->
+            <!-- SEGURANÇA -->
             <div id="sub-seguranca" class="tab-panel">
                 <div class="card">
-                    <h2 class="card-title">Alterar Palavra-passe</h2>
-                    <p class="card-desc">Defina uma nova senha para a sua conta.</p>
+                    <h2 class="card-title">Alterar Senha</h2>
+                    <p class="card-desc">Defina uma nova senha para sua conta.</p>
 
-                    <form onsubmit="alterarSenha(event)" style="max-width: 480px;">
+                    <form onsubmit="alterarSenha(event)">
                         <div class="form-group">
-                            <label for="senhaAtual">Palavra-passe Atual</label>
-                            <input type="password" id="senhaAtual" placeholder="••••••••" required>
+                            <label for="senhaAtual">Senha Atual</label>
+                            <input type="password" id="senhaAtual" required placeholder="••••••••">
                         </div>
                         <div class="form-group">
-                            <label for="novaSenha">Nova Palavra-passe</label>
-                            <input type="password" id="novaSenha" placeholder="Mínimo de 6 caracteres" required minlength="6">
-                        </div>
-                        <div class="form-group">
-                            <label for="confirmaSenha">Confirmar Nova Palavra-passe</label>
-                            <input type="password" id="confirmaSenha" placeholder="Repita a senha" required minlength="6">
+                            <label for="novaSenha">Nova Senha</label>
+                            <input type="password" id="novaSenha" required minlength="6" placeholder="Mínimo 6 caracteres">
                         </div>
                         <button type="submit" class="btn-primary">Atualizar Senha</button>
                     </form>
                 </div>
-
-                <div class="card">
-                    <h2 class="card-title">Autenticação de Dois Fatores (2FA)</h2>
-                    <p class="card-desc">Adiciona uma camada extra de proteção ao entrar.</p>
-                    <div class="toggle-item">
-                        <div>
-                            <div class="toggle-label">Ativar 2FA</div>
-                            <div class="toggle-desc">Solicitar código de confirmação ao fazer login.</div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="check2FA" onchange="salvar2FA(this.checked)">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
             </div>
 
-            <!-- SUB-ABA PREFERÊNCIAS -->
-            <div id="sub-preferencias" class="tab-panel">
-                <div class="card">
-                    <h2 class="card-title">Notificações</h2>
-                    <div class="toggle-item">
-                        <div>
-                            <div class="toggle-label">Avisos de Prazos</div>
-                            <div class="toggle-desc">Destacar tarefas que vencem hoje.</div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="notifPrazos" checked onchange="salvarPref('notifPrazos', this.checked)">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="toggle-item">
-                        <div>
-                            <div class="toggle-label">Sons de Conclusão</div>
-                            <div class="toggle-desc">Efeito sonoro ao concluir tarefas.</div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="somConclusao" checked onchange="salvarPref('somConclusao', this.checked)">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SUB-ABA DADOS -->
+            <!-- DADOS -->
             <div id="sub-dados" class="tab-panel">
                 <div class="card">
                     <h2 class="card-title">Exportar Dados</h2>
-                    <p class="card-desc">Baixe uma cópia de segurança de todas as suas tarefas.</p>
-                    <button type="button" class="btn-secondary" onclick="exportarTarefas()">Exportar Tarefas (.JSON)</button>
+                    <p class="card-desc">Baixe um backup em formato JSON das suas tarefas.</p>
+                    <button type="button" class="btn-secondary" onclick="exportarTarefas()">Exportar (.JSON)</button>
                 </div>
 
-                <div class="card danger-card">
-                    <h2 class="card-title">Zona de Perigo</h2>
+                <div class="card" style="border-color:#7f1d1d;">
+                    <h2 class="card-title" style="color:#f87171;">Zona de Perigo</h2>
                     <div class="toggle-item">
                         <div>
-                            <div class="toggle-label" style="color:#fca5a5;">Limpar Tarefas Concluídas</div>
-                            <div class="toggle-desc">Exclui permanentemente apenas as tarefas marcadas como concluídas.</div>
+                            <div class="toggle-label" style="color:#fca5a5;">Limpar Concluídas</div>
+                            <div class="toggle-desc">Exclui permanentemente as tarefas concluídas.</div>
                         </div>
-                        <button type="button" class="btn-secondary" onclick="limparConcluidas()">Limpar Concluídas</button>
+                        <button type="button" class="btn-secondary" onclick="limparConcluidas()">Limpar</button>
                     </div>
-                    <div class="toggle-item" style="margin-top:16px;">
+                    <div class="toggle-item">
                         <div>
                             <div class="toggle-label" style="color:#ef4444;">Restaurar de Fábrica</div>
-                            <div class="toggle-desc">Apaga todas as tarefas e reseta os dados do perfil.</div>
+                            <div class="toggle-desc">Apaga todas as tarefas e dados.</div>
                         </div>
-                        <button type="button" class="btn-danger" onclick="resetarTudo()">Resetar Tudo</button>
+                        <button type="button" class="btn-danger" onclick="resetarTudo()">Resetar</button>
                     </div>
                 </div>
             </div>
@@ -791,7 +674,6 @@
         const KEY_TAREFAS = "taskflow_tarefas";
         const KEY_USER = "taskflow_user";
 
-        // ================= CONTROLE DE TELAS (QUADRO / CONFIG) =================
         function abrirTela(nomeTela) {
             document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
             document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
@@ -807,24 +689,20 @@
             }
         }
 
-        // ================= CONTROLE DAS SUB-ABAS DE CONFIGURAÇÕES =================
         function trocarSubAba(evt, idSubAba) {
             document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
             document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.remove("active"));
-
             evt.currentTarget.classList.add("active");
             document.getElementById(idSubAba).classList.add("active");
         }
 
-        // ================= TOAST DE NOTIFICAÇÃO =================
         function mostrarToast(msg, isError = false) {
             const toast = document.getElementById("toast");
             toast.textContent = msg;
             toast.className = isError ? "toast error show" : "toast show";
-            setTimeout(() => { toast.className = "toast"; }, 2800);
+            setTimeout(() => { toast.className = "toast"; }, 2500);
         }
 
-        // ================= PERFIL DO USUÁRIO =================
         function obterIniciais(nome) {
             if (!nome) return "U";
             const partes = nome.trim().split(" ");
@@ -835,7 +713,6 @@
         function sincronizarPerfilSidebar() {
             const salvo = localStorage.getItem(KEY_USER);
             const user = salvo ? JSON.parse(salvo) : { nome: "Camily Cavalcante", corAvatar: "#2563eb" };
-
             const sbName = document.getElementById("sidebarName");
             const sbAvatar = document.getElementById("sidebarAvatar");
             const prAvatar = document.getElementById("previewAvatar");
@@ -857,22 +734,9 @@
         function carregarPerfil() {
             sincronizarPerfilSidebar();
             const salvo = localStorage.getItem(KEY_USER);
-            const user = salvo ? JSON.parse(salvo) : {
-                nome: "Camily Cavalcante",
-                email: "camily@email.com",
-                cargo: "Gestora de Projetos",
-                fuso: "America/Sao_Paulo",
-                biografia: "",
-                corAvatar: "#2563eb",
-                twoFactor: false
-            };
-
+            const user = salvo ? JSON.parse(salvo) : { nome: "Camily Cavalcante", email: "camily@email.com", corAvatar: "#2563eb" };
             document.getElementById("nome").value = user.nome || "";
             document.getElementById("email").value = user.email || "";
-            document.getElementById("cargo").value = user.cargo || "";
-            document.getElementById("fuso").value = user.fuso || "America/Sao_Paulo";
-            document.getElementById("biografia").value = user.biografia || "";
-            document.getElementById("check2FA").checked = !!user.twoFactor;
         }
 
         function mudarCorAvatar(cor, el) {
@@ -890,10 +754,6 @@
             const salvo = JSON.parse(localStorage.getItem(KEY_USER) || "{}");
             salvo.nome = document.getElementById("nome").value;
             salvo.email = document.getElementById("email").value;
-            salvo.cargo = document.getElementById("cargo").value;
-            salvo.fuso = document.getElementById("fuso").value;
-            salvo.biografia = document.getElementById("biografia").value;
-
             localStorage.setItem(KEY_USER, JSON.stringify(salvo));
             sincronizarPerfilSidebar();
             mostrarToast("Perfil salvo com sucesso!");
@@ -901,31 +761,9 @@
 
         function alterarSenha(e) {
             e.preventDefault();
-            const nova = document.getElementById("novaSenha").value;
-            const confirma = document.getElementById("confirmaSenha").value;
-
-            if (nova !== confirma) {
-                mostrarToast("As senhas não coincidem.", true);
-                return;
-            }
             document.getElementById("senhaAtual").value = "";
             document.getElementById("novaSenha").value = "";
-            document.getElementById("confirmaSenha").value = "";
             mostrarToast("Senha alterada com sucesso!");
-        }
-
-        function salvar2FA(ativo) {
-            const salvo = JSON.parse(localStorage.getItem(KEY_USER) || "{}");
-            salvo.twoFactor = ativo;
-            localStorage.setItem(KEY_USER, JSON.stringify(salvo));
-            mostrarToast(ativo ? "2FA Ativado!" : "2FA Desativado.");
-        }
-
-        function salvarPref(chave, valor) {
-            const salvo = JSON.parse(localStorage.getItem(KEY_USER) || "{}");
-            salvo[chave] = valor;
-            localStorage.setItem(KEY_USER, JSON.stringify(salvo));
-            mostrarToast("Preferência salva!");
         }
 
         function exportarTarefas() {
@@ -937,7 +775,7 @@
             a.download = `tarefas_backup_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
-            mostrarToast("Backup baixado com sucesso!");
+            mostrarToast("Backup exportado!");
         }
 
         function limparConcluidas() {
@@ -950,7 +788,7 @@
         }
 
         function resetarTudo() {
-            if (!confirm("Atenção: deseja restaurar todos os dados de fábrica?")) return;
+            if (!confirm("Deseja restaurar todos os dados de fábrica?")) return;
             localStorage.removeItem(KEY_TAREFAS);
             localStorage.removeItem(KEY_USER);
             mostrarToast("Dados restaurados! Recarregando...");
@@ -963,7 +801,6 @@
             location.href = "index.html";
         }
 
-        // ================= QUADRO DE TAREFAS =================
         function carregarTarefas() {
             const salvo = localStorage.getItem(KEY_TAREFAS);
             if (salvo) return JSON.parse(salvo);
@@ -1027,7 +864,6 @@
             render();
         }
 
-        // Início
         document.addEventListener("DOMContentLoaded", () => {
             sincronizarPerfilSidebar();
             render();

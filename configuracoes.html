@@ -2,7 +2,11 @@
 <html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Gerenciador de Tarefas - Configurações</title>
     <style>
         * {
@@ -12,125 +16,168 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        html { background: #020617; }
         body {
             background-color: #0f172a;
             color: #f8fafc;
-            display: flex;
+            display: block;
             min-height: 100vh;
+            min-height: 100dvh;
+            max-width: 480px;
+            margin: 0 auto;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior: none;
+            box-shadow: 0 0 60px rgba(0,0,0,.6);
         }
 
-        /* Barra Lateral */
+        input, textarea, select {
+            font-size: 16px;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        button, .btn-primary, a { touch-action: manipulation; }
+        button:active, .btn-primary:active, .tab-btn:active { transform: scale(.96); }
+        ::-webkit-scrollbar { display: none; }
+
+        /* Barra Inferior (App Shell) */
         .sidebar {
-            width: 260px;
-            background-color: #1e293b;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            border-right: 1px solid #334155;
-            flex-shrink: 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            max-width: 480px;
+            width: 100%;
+            height: auto;
+            padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+            border-top: 1px solid #334155;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 900;
         }
 
-        .logo {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #3b82f6;
-            margin-bottom: 40px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-        }
+        .sidebar .logo { display: none; }
 
         .nav-links {
             list-style: none;
             display: flex;
-            flex-direction: column;
-            gap: 8px;
+            flex-direction: row;
+            justify-content: space-around;
+            gap: 4px;
         }
 
+        .nav-item { flex: 1; }
+
         .nav-item a {
-            display: block;
-            padding: 12px 16px;
-            color: #94a3b8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 2px;
+            padding: 8px 4px;
+            font-size: 0.72rem;
+            border-radius: 12px;
             text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
+            color: #94a3b8;
+            width: 100%;
             transition: all 0.2s;
         }
 
-        .nav-item.active a, .nav-item a:hover {
-            background-color: #334155;
-            color: #fff;
+        .nav-item.active a {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+            font-weight: 600;
         }
 
+        /* Top Bar */
         .user-profile {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            max-width: 480px;
+            padding: calc(12px + env(safe-area-inset-top)) 16px 12px;
+            border-bottom: 1px solid #334155;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             display: flex;
             align-items: center;
             gap: 12px;
-            padding-top: 20px;
-            border-top: 1px solid #334155;
+            z-index: 900;
         }
 
         .avatar {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             background-color: #2563eb;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            color: #fff;
             flex-shrink: 0;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .user-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .user-info .name {
             font-size: 0.9rem;
             font-weight: 600;
-            max-width: 140px;
+            max-width: 200px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .user-info .logout {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #ef4444;
             text-decoration: none;
-            display: inline-block;
-            margin-top: 2px;
+            padding: 6px 12px;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 999px;
         }
 
         /* Conteúdo Principal */
         .main-content {
-            flex: 1;
-            padding: 40px;
-            overflow-y: auto;
-            max-width: 1050px;
+            padding: calc(84px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom));
+            overflow-x: hidden;
         }
 
         .header {
-            margin-bottom: 30px;
+            margin-bottom: 18px;
         }
 
         .header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 6px;
+            font-size: 1.5rem;
+            margin-bottom: 4px;
         }
 
         .header p {
             color: #94a3b8;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
         }
 
-        /* Abas de Navegação Interna */
+        /* Abas */
         .settings-tabs {
             display: flex;
-            gap: 12px;
-            border-bottom: 1px solid #334155;
-            margin-bottom: 28px;
             overflow-x: auto;
+            gap: 6px;
+            border-bottom: 1px solid #334155;
+            margin-bottom: 20px;
+            scrollbar-width: none;
         }
 
         .tab-btn {
@@ -138,366 +185,217 @@
             border: none;
             outline: none;
             color: #94a3b8;
-            padding: 12px 18px;
-            font-size: 0.95rem;
+            padding: 10px 14px;
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
+            border-radius: 999px;
             white-space: nowrap;
-        }
-
-        .tab-btn:hover {
-            color: #f8fafc;
+            transition: all 0.2s;
         }
 
         .tab-btn.active {
+            background: #334155;
             color: #3b82f6;
-            border-bottom-color: #3b82f6;
         }
 
-        /* Painéis das Abas */
         .tab-panel {
             display: none;
             animation: fadeIn 0.2s ease-in-out;
         }
 
-        .tab-panel.active {
-            display: block;
-        }
+        .tab-panel.active { display: block; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(4px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Cards de Configuração */
         .card {
             background-color: #1e293b;
             border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 28px;
-            margin-bottom: 24px;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
         }
 
         .card-title {
-            font-size: 1.15rem;
+            font-size: 1.05rem;
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .card-desc {
             color: #94a3b8;
-            font-size: 0.85rem;
-            margin-bottom: 22px;
+            font-size: 0.8rem;
+            margin-bottom: 16px;
         }
 
-        /* Seção do Avatar com Foto */
         .avatar-edit-section {
             display: flex;
             align-items: center;
-            gap: 20px;
-            margin-bottom: 24px;
-            padding-bottom: 20px;
+            gap: 16px;
+            margin-bottom: 18px;
+            padding-bottom: 16px;
             border-bottom: 1px solid #334155;
         }
 
         .avatar-preview {
-            width: 72px;
-            height: 72px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background-color: #2563eb;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: #fff;
-            border: 2px solid #3b82f6;
         }
 
-        .avatar-colors {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
+        .avatar-colors { display: flex; gap: 8px; margin-top: 6px; }
         .color-dot {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             cursor: pointer;
             border: 2px solid transparent;
-            transition: transform 0.15s;
         }
+        .color-dot.selected { border-color: #fff; }
 
-        .color-dot:hover {
-            transform: scale(1.15);
-        }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; margin-bottom: 6px; color: #cbd5e1; font-size: 0.8rem; font-weight: 600; }
 
-        .color-dot.selected {
-            border-color: #fff;
-        }
-
-        /* Formulários e Inputs */
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #cbd5e1;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        select,
-        textarea {
+        input[type="text"], input[type="email"], input[type="password"], select, textarea {
             width: 100%;
             padding: 12px 14px;
             background-color: #0f172a;
             border: 1px solid #334155;
-            border-radius: 8px;
+            border-radius: 10px;
             color: #f8fafc;
-            font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.2s;
         }
 
-        input:focus, select:focus, textarea:focus {
-            border-color: #3b82f6;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 85px;
-        }
-
-        /* Toggle Switches */
         .toggle-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 0;
+            padding: 14px 0;
             border-bottom: 1px solid #334155;
+            gap: 12px;
         }
-
-        .toggle-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .toggle-label {
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 2px;
-        }
-
-        .toggle-desc {
-            font-size: 0.8rem;
-            color: #94a3b8;
-        }
+        .toggle-item:last-child { border-bottom: none; }
+        .toggle-label { font-weight: 600; font-size: 0.9rem; }
+        .toggle-desc { font-size: 0.75rem; color: #94a3b8; }
 
         .switch {
             position: relative;
             display: inline-block;
-            width: 46px;
+            width: 44px;
             height: 24px;
             flex-shrink: 0;
         }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
+        .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #334155;
-            transition: .3s;
-            border-radius: 34px;
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #334155; border-radius: 34px; transition: .3s;
         }
-
         .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; border-radius: 50%; transition: .3s;
         }
+        input:checked + .slider { background-color: #2563eb; }
+        input:checked + .slider:before { transform: translateX(20px); }
 
-        input:checked + .slider {
-            background-color: #2563eb;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(22px);
-        }
-
-        /* Botões */
         .btn-primary {
+            width: 100%;
             background-color: #2563eb;
             color: #fff;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
+            padding: 14px;
+            border-radius: 12px;
             font-weight: 600;
-            font-size: 0.95rem;
             cursor: pointer;
-            transition: background 0.2s;
         }
 
-        .btn-primary:hover {
-            background-color: #1d4ed8;
-        }
-
-        .btn-secondary {
-            background-color: #334155;
-            color: #cbd5e1;
+        .btn-secondary, .btn-danger {
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
             border: none;
-            padding: 11px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: background 0.2s;
         }
+        .btn-secondary { background: #334155; color: #cbd5e1; }
+        .btn-danger { background: #ef4444; color: #fff; }
 
-        .btn-secondary:hover {
-            background-color: #475569;
-        }
+        .danger-card { border: 1px solid #7f1d1d; }
 
-        .btn-danger {
-            background-color: #ef4444;
-            color: #fff;
-            border: none;
-            padding: 11px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-danger:hover {
-            background-color: #dc2626;
-        }
-
-        /* Zona de Perigo */
-        .danger-card {
-            border: 1px solid #7f1d1d;
-            background-color: #1c151c;
-        }
-
-        .danger-card .card-title {
-            color: #f87171;
-        }
-
-        /* Toast de Feedback */
         .toast {
             position: fixed;
-            bottom: 24px;
-            right: 24px;
+            bottom: calc(84px + env(safe-area-inset-bottom));
+            left: 20px;
+            right: 20px;
+            margin: 0 auto;
+            max-width: 440px;
             background-color: #10b981;
             color: #fff;
-            padding: 14px 22px;
-            border-radius: 8px;
+            padding: 12px 18px;
+            border-radius: 12px;
             font-weight: 600;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            text-align: center;
             transform: translateY(100px);
             opacity: 0;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             z-index: 999;
         }
-
-        .toast.error {
-            background-color: #ef4444;
-        }
-
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        @media (max-width: 768px) {
-            body { flex-direction: column; }
-            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #334155; }
-            .form-grid { grid-template-columns: 1fr; }
-            .main-content { padding: 24px; }
-        }
+        .toast.error { background-color: #ef4444; }
+        .toast.show { transform: translateY(0); opacity: 1; }
     </style>
 </head>
 <body>
 
-    <!-- Barra Lateral -->
+    <!-- BARRA LATERAL / INFERIOR (APP) -->
     <aside class="sidebar">
-        <div>
-            <a href="dashboard.html" class="logo">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                TaskFlow
-            </a>
-            <ul class="nav-links">
-                <li class="nav-item"><a href="dashboard.html">O Meu Quadro</a></li>
-                <li class="nav-item"><a href="nova-tarefa.html">Nova Tarefa</a></li>
-                <li class="nav-item active"><a href="configuracoes.html">Configurações</a></li>
-            </ul>
-        </div>
-
-        <div class="user-profile">
-            <div class="avatar" id="sidebarAvatar">U</div>
-            <div class="user-info">
-                <div class="name" id="sidebarName">Utilizador</div>
-                <a href="index.html" class="logout" onclick="fazerLogout(event)">Sair do sistema</a>
-            </div>
-        </div>
+        <ul class="nav-links">
+            <li class="nav-item"><a href="dashboard.html">📋 O Meu Quadro</a></li>
+            <li class="nav-item"><a href="nova-tarefa.html">➕ Nova Tarefa</a></li>
+            <li class="nav-item active"><a href="configuracoes.html">⚙️ Configurações</a></li>
+        </ul>
     </aside>
 
-    <!-- Conteúdo Principal -->
+    <!-- HEADER SUPERIOR -->
+    <div class="user-profile">
+        <div class="avatar" id="sidebarAvatar">U</div>
+        <div class="user-info">
+            <div class="name" id="sidebarName">Utilizador</div>
+            <a href="index.html" class="logout" onclick="fazerLogout(event)">Sair</a>
+        </div>
+    </div>
+
+    <!-- CONTEÚDO -->
     <main class="main-content">
         <header class="header">
             <h1>Configurações da Conta</h1>
-            <p>Gerencie o seu perfil, credenciais de acesso, notificações e dados do aplicativo.</p>
+            <p>Gerencie o seu perfil, segurança e dados.</p>
         </header>
 
-        <!-- Navegação por Abas -->
         <div class="settings-tabs">
             <button class="tab-btn active" onclick="trocarAba(event, 'aba-perfil')">Perfil</button>
             <button class="tab-btn" onclick="trocarAba(event, 'aba-seguranca')">Segurança</button>
             <button class="tab-btn" onclick="trocarAba(event, 'aba-preferencias')">Preferências</button>
-            <button class="tab-btn" onclick="trocarAba(event, 'aba-dados')">Dados & Conta</button>
+            <button class="tab-btn" onclick="trocarAba(event, 'aba-dados')">Dados</button>
         </div>
 
         <!-- ABA 1: PERFIL -->
         <section id="aba-perfil" class="tab-panel active">
             <div class="card">
                 <h2 class="card-title">Informações Pessoais</h2>
-                <p class="card-desc">Atualize os dados que aparecem no seu painel e tarefas atribuídas.</p>
+                <p class="card-desc">Atualize os dados exibidos no aplicativo.</p>
 
                 <div class="avatar-edit-section">
                     <div class="avatar-preview" id="previewAvatar">U</div>
                     <div>
-                        <label>Cor de destaque do Avatar</label>
+                        <label>Cor do Avatar</label>
                         <div class="avatar-colors">
                             <div class="color-dot selected" style="background:#2563eb;" onclick="mudarCorAvatar('#2563eb', this)"></div>
                             <div class="color-dot" style="background:#059669;" onclick="mudarCorAvatar('#059669', this)"></div>
@@ -509,35 +407,33 @@
                 </div>
 
                 <form id="formPerfil" onsubmit="salvarPerfil(event)">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="nome">Nome Completo</label>
-                            <input type="text" id="nome" required placeholder="Ex: Camily Cavalcante">
-                        </div>
+                    <div class="form-group">
+                        <label for="nome">Nome Completo</label>
+                        <input type="text" id="nome" required placeholder="Ex: Camily Cavalcante">
+                    </div>
 
-                        <div class="form-group">
-                            <label for="email">Endereço de E-mail</label>
-                            <input type="email" id="email" required placeholder="exemplo@email.com">
-                        </div>
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" required placeholder="exemplo@email.com">
+                    </div>
 
-                        <div class="form-group">
-                            <label for="cargo">Cargo / Função</label>
-                            <input type="text" id="cargo" placeholder="Ex: Gestora de Projetos">
-                        </div>
+                    <div class="form-group">
+                        <label for="cargo">Cargo / Função</label>
+                        <input type="text" id="cargo" placeholder="Ex: Gestora de Projetos">
+                    </div>
 
-                        <div class="form-group">
-                            <label for="fuso">Fuso Horário</label>
-                            <select id="fuso">
-                                <option value="America/Sao_Paulo">Brasília (GMT-3)</option>
-                                <option value="Europe/Lisbon">Lisboa (GMT+0)</option>
-                                <option value="UTC">UTC Padrão</option>
-                            </select>
-                        </div>
+                    <div class="form-group">
+                        <label for="fuso">Fuso Horário</label>
+                        <select id="fuso">
+                            <option value="America/Sao_Paulo">Brasília (GMT-3)</option>
+                            <option value="Europe/Lisbon">Lisboa (GMT+0)</option>
+                            <option value="UTC">UTC Padrão</option>
+                        </select>
+                    </div>
 
-                        <div class="form-group full-width">
-                            <label for="biografia">Biografia curta</label>
-                            <textarea id="biografia" placeholder="Descreva brevemente a sua função ou foco principal..."></textarea>
-                        </div>
+                    <div class="form-group">
+                        <label for="biografia">Biografia curta</label>
+                        <textarea id="biografia" placeholder="Descreva brevemente a sua função..."></textarea>
                     </div>
 
                     <button type="submit" class="btn-primary">Salvar Alterações</button>
@@ -548,37 +444,35 @@
         <!-- ABA 2: SEGURANÇA -->
         <section id="aba-seguranca" class="tab-panel">
             <div class="card">
-                <h2 class="card-title">Alterar Palavra-passe</h2>
-                <p class="card-desc">Recomendamos utilizar uma senha forte contendo números, letras e símbolos.</p>
+                <h2 class="card-title">Alterar Senha</h2>
+                <p class="card-desc">Defina uma senha forte com números e letras.</p>
 
-                <form id="formSenha" onsubmit="alterarSenha(event)" style="max-width: 500px;">
+                <form id="formSenha" onsubmit="alterarSenha(event)">
                     <div class="form-group">
-                        <label for="senhaAtual">Palavra-passe Atual</label>
+                        <label for="senhaAtual">Senha Atual</label>
                         <input type="password" id="senhaAtual" placeholder="••••••••" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="novaSenha">Nova Palavra-passe</label>
-                        <input type="password" id="novaSenha" placeholder="Mínimo de 8 caracteres" required minlength="6">
+                        <label for="novaSenha">Nova Senha</label>
+                        <input type="password" id="novaSenha" placeholder="Mínimo de 6 caracteres" required minlength="6">
                     </div>
 
                     <div class="form-group">
-                        <label for="confirmaSenha">Confirmar Nova Palavra-passe</label>
+                        <label for="confirmaSenha">Confirmar Senha</label>
                         <input type="password" id="confirmaSenha" placeholder="Repita a nova senha" required minlength="6">
                     </div>
 
-                    <button type="submit" class="btn-primary">Atualizar Palavra-passe</button>
+                    <button type="submit" class="btn-primary">Atualizar Senha</button>
                 </form>
             </div>
 
             <div class="card">
-                <h2 class="card-title">Camada Extra de Proteção (2FA)</h2>
-                <p class="card-desc">Adicione autenticação em dois fatores para impedir acessos não autorizados.</p>
-
+                <h2 class="card-title">2FA (Dois Fatores)</h2>
                 <div class="toggle-item">
                     <div>
                         <div class="toggle-label">Autenticação em Duas Etapas</div>
-                        <div class="toggle-desc">Solicitar código de verificação via e-mail ou app authenticator ao fazer login.</div>
+                        <div class="toggle-desc">Exigir código de verificação ao entrar.</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="check2FA" onchange="salvar2FA(this.checked)">
@@ -586,31 +480,16 @@
                     </label>
                 </div>
             </div>
-
-            <div class="card">
-                <h2 class="card-title">Sessões Ativas</h2>
-                <p class="card-desc">Dispositivos conectados à sua conta.</p>
-
-                <div class="toggle-item">
-                    <div>
-                        <div class="toggle-label">Navegador Atual (Este dispositivo)</div>
-                        <div class="toggle-desc" id="sessaoStatus">Sessão iniciada • Online agora</div>
-                    </div>
-                    <span style="color: #10b981; font-size: 0.85rem; font-weight: 600;">Ativo</span>
-                </div>
-            </div>
         </section>
 
         <!-- ABA 3: PREFERÊNCIAS -->
         <section id="aba-preferencias" class="tab-panel">
             <div class="card">
-                <h2 class="card-title">Notificações e Avisos</h2>
-                <p class="card-desc">Controle como e quando deseja receber alertas sobre prazos.</p>
-
+                <h2 class="card-title">Notificações</h2>
                 <div class="toggle-item">
                     <div>
-                        <div class="toggle-label">Lembretes de Tarefas Próximas do Vencimento</div>
-                        <div class="toggle-desc">Avisar com antecedência quando uma tarefa tiver prazo para o dia de hoje.</div>
+                        <div class="toggle-label">Avisos de Prazos</div>
+                        <div class="toggle-desc">Lembrar tarefas do dia de hoje.</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="notifPrazos" checked onchange="salvarPref('notifPrazos', this.checked)">
@@ -621,7 +500,7 @@
                 <div class="toggle-item">
                     <div>
                         <div class="toggle-label">Sons de Conclusão</div>
-                        <div class="toggle-desc">Emitir um som suave ao marcar uma tarefa como concluída.</div>
+                        <div class="toggle-desc">Som suave ao finalizar tarefa.</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="somConclusao" checked onchange="salvarPref('somConclusao', this.checked)">
@@ -629,60 +508,43 @@
                     </label>
                 </div>
             </div>
-
-            <div class="card">
-                <h2 class="card-title">Exibição de Tarefas</h2>
-                <div class="form-grid" style="max-width: 500px;">
-                    <div class="form-group">
-                        <label for="formatoData">Formato de Data</label>
-                        <select id="formatoData" onchange="salvarPref('formatoData', this.value)">
-                            <option value="pt-BR">DD/MM/AAAA (Padrão)</option>
-                            <option value="en-US">AAAA-MM-DD (ISO)</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
         </section>
 
-        <!-- ABA 4: DADOS & CONTA -->
+        <!-- ABA 4: DADOS -->
         <section id="aba-dados" class="tab-panel">
             <div class="card">
-                <h2 class="card-title">Exportação de Tarefas</h2>
-                <p class="card-desc">Transfira ou faça backup de todas as suas tarefas criadas no TaskFlow.</p>
-                <button type="button" class="btn-secondary" onclick="exportarTarefas()">Exportar Tarefas (.JSON)</button>
+                <h2 class="card-title">Exportar Dados</h2>
+                <p class="card-desc">Baixe um backup de todas as tarefas.</p>
+                <button type="button" class="btn-secondary" onclick="exportarTarefas()">Exportar (.JSON)</button>
             </div>
 
             <div class="card danger-card">
-                <h2 class="card-title">Zona de Perigo</h2>
-                <p class="card-desc">Ações irreversíveis que afetam o seu banco de dados local.</p>
-
+                <h2 class="card-title" style="color: #f87171;">Zona de Perigo</h2>
                 <div class="toggle-item">
                     <div>
                         <div class="toggle-label" style="color: #fca5a5;">Limpar Tarefas Concluídas</div>
-                        <div class="toggle-desc">Remove apenas as tarefas que já estão marcadas como "Concluídas".</div>
+                        <div class="toggle-desc">Apaga apenas as tarefas marcadas como concluídas.</div>
                     </div>
-                    <button type="button" class="btn-secondary" onclick="limparConcluidas()">Limpar Concluídas</button>
+                    <button type="button" class="btn-secondary" onclick="limparConcluidas()">Limpar</button>
                 </div>
 
-                <div class="toggle-item" style="margin-top: 16px;">
+                <div class="toggle-item" style="margin-top: 14px;">
                     <div>
-                        <div class="toggle-label" style="color: #ef4444;">Restaurar Dados de Fábrica</div>
-                        <div class="toggle-desc">Apaga todas as tarefas e reseta o perfil para os valores de teste iniciais.</div>
+                        <div class="toggle-label" style="color: #ef4444;">Restaurar de Fábrica</div>
+                        <div class="toggle-desc">Apaga tudo e restaura o app para o estado inicial.</div>
                     </div>
-                    <button type="button" class="btn-danger" onclick="resetarTudo()">Resetar Tudo</button>
+                    <button type="button" class="btn-danger" onclick="resetarTudo()">Resetar</button>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Toast de Notificação -->
-    <div id="toast" class="toast">Alterações guardadas com sucesso!</div>
+    <div id="toast" class="toast">Alterações salvas!</div>
 
     <script>
         const KEY_USER = "taskflow_user";
         const KEY_TAREFAS = "taskflow_tarefas";
 
-        // Obter iniciais a partir do nome
         function obterIniciais(nome) {
             if (!nome) return "U";
             const partes = nome.trim().split(" ");
@@ -690,26 +552,20 @@
             return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
         }
 
-        // Exibir Toast
         function mostrarToast(mensagem, isError = false) {
             const toast = document.getElementById("toast");
             toast.textContent = mensagem;
             toast.className = isError ? "toast error show" : "toast show";
-            setTimeout(() => {
-                toast.className = "toast";
-            }, 3000);
+            setTimeout(() => { toast.className = "toast"; }, 2500);
         }
 
-        // Alternar Abas
         function trocarAba(evt, idAba) {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
             document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-            
             evt.currentTarget.classList.add("active");
             document.getElementById(idAba).classList.add("active");
         }
 
-        // Carregar Perfil do LocalStorage
         function carregarPerfil() {
             const salvo = localStorage.getItem(KEY_USER);
             const user = salvo ? JSON.parse(salvo) : {
@@ -717,15 +573,13 @@
                 email: "camily@email.com",
                 cargo: "Gestora de Projetos",
                 fuso: "America/Sao_Paulo",
-                biografia: "Focada em produtividade diária e organização de fluxos.",
+                biografia: "Focada em produtividade diária.",
                 corAvatar: "#2563eb",
                 twoFactor: false,
                 notifPrazos: true,
-                somConclusao: true,
-                formatoData: "pt-BR"
+                somConclusao: true
             };
 
-            // Preencher campos
             document.getElementById("nome").value = user.nome || "";
             document.getElementById("email").value = user.email || "";
             document.getElementById("cargo").value = user.cargo || "";
@@ -734,17 +588,14 @@
             document.getElementById("check2FA").checked = !!user.twoFactor;
             document.getElementById("notifPrazos").checked = user.notifPrazos !== false;
             document.getElementById("somConclusao").checked = user.somConclusao !== false;
-            document.getElementById("formatoData").value = user.formatoData || "pt-BR";
 
             atualizarUIUsuario(user);
         }
 
-        // Atualizar interface visual do avatar e nome
         function atualizarUIUsuario(user) {
             const iniciais = obterIniciais(user.nome);
             const cor = user.corAvatar || "#2563eb";
 
-            // Sidebar
             const sbAvatar = document.getElementById("sidebarAvatar");
             const sbName = document.getElementById("sidebarName");
             if (sbAvatar) {
@@ -753,7 +604,6 @@
             }
             if (sbName) sbName.textContent = user.nome;
 
-            // Preview na tela de perfil
             const prAvatar = document.getElementById("previewAvatar");
             if (prAvatar) {
                 prAvatar.textContent = iniciais;
@@ -761,7 +611,6 @@
             }
         }
 
-        // Mudar cor do avatar
         function mudarCorAvatar(cor, elemento) {
             document.querySelectorAll(".color-dot").forEach(d => d.classList.remove("selected"));
             elemento.classList.add("selected");
@@ -773,7 +622,6 @@
             mostrarToast("Cor do avatar atualizada!");
         }
 
-        // Salvar Perfil
         function salvarPerfil(event) {
             event.preventDefault();
             const salvo = JSON.parse(localStorage.getItem(KEY_USER) || "{}");
@@ -789,23 +637,20 @@
             mostrarToast("Perfil atualizado com sucesso!");
         }
 
-        // Salvar 2FA
         function salvar2FA(ativo) {
             const salvo = JSON.parse(localStorage.getItem(KEY_USER) || "{}");
             salvo.twoFactor = ativo;
             localStorage.setItem(KEY_USER, JSON.stringify(salvo));
-            mostrarToast(ativo ? "Autenticação em 2 etapas ativada!" : "Autenticação em 2 etapas desativada.");
+            mostrarToast(ativo ? "2FA ativado!" : "2FA desativado.");
         }
 
-        // Salvar Preferências
         function salvarPref(chave, valor) {
             const salvo = JSON.parse(localStorage.getItem(KEY_USER) || "{}");
             salvo[chave] = valor;
             localStorage.setItem(KEY_USER, JSON.stringify(salvo));
-            mostrarToast("Preferência guardada!");
+            mostrarToast("Preferência salva!");
         }
 
-        // Alterar Senha
         function alterarSenha(event) {
             event.preventDefault();
             const atual = document.getElementById("senhaAtual").value;
@@ -813,60 +658,48 @@
             const confirma = document.getElementById("confirmaSenha").value;
 
             if (nova !== confirma) {
-                mostrarToast("A nova palavra-passe e a confirmação não conferem.", true);
+                mostrarToast("As senhas não coincidem.", true);
                 return;
             }
 
-            if (nova.length < 6) {
-                mostrarToast("A nova palavra-passe deve ter no mínimo 6 caracteres.", true);
-                return;
-            }
-
-            // Simulação de alteração com sucesso
-            localStorage.setItem("taskflow_pass_updated", new Date().toISOString());
             document.getElementById("formSenha").reset();
-            mostrarToast("Palavra-passe alterada com sucesso!");
+            mostrarToast("Senha alterada com sucesso!");
         }
 
-        // Exportar tarefas
         function exportarTarefas() {
             const tarefas = localStorage.getItem(KEY_TAREFAS) || "[]";
             const blob = new Blob([tarefas], { type: "application/json" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `taskflow_backup_${new Date().toISOString().slice(0,10)}.json`;
+            a.download = `backup_tarefas_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
-            mostrarToast("Arquivo de tarefas exportado!");
+            mostrarToast("Arquivo exportado!");
         }
 
-        // Limpar Concluídas
         function limparConcluidas() {
-            if (!confirm("Tem certeza que deseja apagar todas as tarefas concluídas?")) return;
+            if (!confirm("Deseja apagar as tarefas concluídas?")) return;
             const tarefas = JSON.parse(localStorage.getItem(KEY_TAREFAS) || "[]");
-            const ativas = tarefas.filter(t => t.status !== "concluida");
+            const ativas = tarefas.filter(t => t.status !== "concluido");
             localStorage.setItem(KEY_TAREFAS, JSON.stringify(ativas));
             mostrarToast("Tarefas concluídas removidas.");
         }
 
-        // Resetar tudo
         function resetarTudo() {
-            if (!confirm("ATENÇÃO: Deseja apagar todas as tarefas e restaurar os dados de fábrica? Esta ação não pode ser desfeita.")) return;
+            if (!confirm("Atenção: deseja restaurar todos os dados de fábrica?")) return;
             localStorage.removeItem(KEY_TAREFAS);
             localStorage.removeItem(KEY_USER);
             mostrarToast("Dados restaurados! Recarregando...");
-            setTimeout(() => location.reload(), 1200);
+            setTimeout(() => location.reload(), 1000);
         }
 
-        // Logout
         function fazerLogout(e) {
             e.preventDefault();
             localStorage.removeItem("userToken");
-            location.href = "login.html";
+            location.href = "index.html";
         }
 
-        // Inicializar
         document.addEventListener("DOMContentLoaded", carregarPerfil);
     </script>
 </body>
